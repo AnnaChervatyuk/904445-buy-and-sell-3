@@ -1,10 +1,12 @@
 'use strict';
 
 const {getRandomInt, shuffle} = require(`../../utils`);
+const {ExitCode} = require(`../../constants`);
 const fs = require(`fs`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
+const MAX_COUNT = 1000;
 
 const TITLES = [
   `Продам книги Стивена Кинга.`,
@@ -72,7 +74,7 @@ const generateOffers = (count) => (
     description: shuffle(SENTENCES).slice(0, 5).join(` `),
     sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
-    category: shuffle(CATEGORIES).slice(0, getRandomInt(0, CATEGORIES.length - 1)),
+    category: shuffle(CATEGORIES).slice(0, getRandomInt(1, CATEGORIES.length - 1)),
   }))
 );
 
@@ -81,11 +83,18 @@ module.exports = {
   run(args) {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
+
+    if (countOffer > MAX_COUNT) {
+      console.error(`Не больше 1000 объявлений`);
+      process.exit(ExitCode.error);
+    }
+
     const content = JSON.stringify(generateOffers(countOffer));
 
     fs.writeFile(FILE_NAME, content, (err) => {
       if (err) {
-        return console.error(`Can't write data to file...`);
+        console.error(`Can't write data to file...`);
+        process.exit(ExitCode.error);
       }
 
       return console.info(`Operation success. File created.`);
