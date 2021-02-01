@@ -69,7 +69,7 @@ const getPictureFileName = (number) => {
 
 const generateOffers = (count) => (
   Array(count).fill({}).map(() => ({
-    type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
+    type: Object.values(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
     description: shuffle(SENTENCES).slice(0, 5).join(` `),
     sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
